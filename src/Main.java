@@ -1,8 +1,7 @@
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         System.out.println("""
         
          _  __          ____  _        _ _       \s
@@ -16,11 +15,10 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        while (true) {
+        for (;;) {
             System.out.println("> Strike [Enter] when 🔴 appears.");
 
             try {
-                Thread.sleep((long) (Math.random() * 1000 + 1000));
                 System.out.print("\uD83D\uDFE1 ");
                 Thread.sleep((long) (Math.random() * 1000 + 500));
                 System.out.print("\uD83D\uDFE0 ");
@@ -46,6 +44,6 @@ public class Main {
         }
 
         scanner.close();
-        System.out.println(">> Thanks for playing! 👋");
+        System.out.println(">> Thanks for playing! 👋 Made by Tanav.");
     }
 }
