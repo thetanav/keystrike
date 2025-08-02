@@ -1,6 +1,10 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+    public static ArrayList<Long> reactions = new ArrayList<>();
+    public static long mini = Long.MAX_VALUE;
+
     private static void printBanner() {
         System.out.println("""
         
@@ -42,6 +46,8 @@ public class Main {
                     System.out.println(">> Too early! Try again.");
                 } else {
                     System.out.printf(">> Your reaction time: %d ms.%n", reactionTime);
+                    reactions.add(reactionTime);
+                    mini = Math.min(mini, reactionTime);
                 }
 
                 System.out.println(">> Play again? [y/n]");
@@ -54,7 +60,10 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        System.out.println(">> Thanks for playing! 👋 Made by Tanav.");
+        long reactionsSum = reactions.stream().mapToLong(Long::longValue).sum();
+        System.out.println("> Your average reaction time: " + (reactionsSum / reactions.size() + " ms"));
+        System.out.println("> Your minimum reaction time: " + mini);
+        System.out.println("> Thanks for playing! 👋 Made by Tanav.");
     }
 }
 
