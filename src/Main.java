@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    private static void printBanner() {
         System.out.println("""
         
          _  __          ____  _        _ _       \s
@@ -12,38 +12,70 @@ public class Main {
                   |___/                          \s
                Press [Enter] on 🔴 to strike!
         """);
+    }
 
-        Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) {
+        printBanner();
 
-        for (;;) {
-            System.out.println("> Strike [Enter] when 🔴 appears.");
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (true) {
+                System.out.println("> Strike [Enter] when 🔴 appears.");
 
-            try {
-                System.out.print("\uD83D\uDFE1 ");
-                Thread.sleep((long) (Math.random() * 1000 + 500));
-                System.out.print("\uD83D\uDFE0 ");
-                Thread.sleep((long) (Math.random() * 1000 + 500));
-                System.out.println("\uD83D\uDD34"); // RED
-            } catch (InterruptedException ignored) {}
+                try {
+                    System.out.print("🟡 ");
+                    Thread.sleep((long) (Math.random() * 1000 + 500));
+                    System.out.print("🟠 ");
+                    Thread.sleep((long) (Math.random() * 1000 + 500));
+                    System.out.println("🔴");
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
 
-            long startTime = System.currentTimeMillis();
-            String key = scanner.nextLine(); // read one key
-            long endTime = System.currentTimeMillis();
+                ReactionTimer timer = new ReactionTimer(scanner);
+                timer.start();
 
-            if (startTime == endTime) {
-                System.out.println(">> Too early! Try again.");
-            } else {
-                System.out.printf(">> Your reaction time: %d ms.%n", endTime - startTime);
+                long startTime = System.currentTimeMillis();
+                timer.join(); // wait until the user presses Enter
+                long reactionTime = timer.pressTime - startTime;
+
+                if (reactionTime < 0 || timer.tooEarly) {
+                    System.out.println(">> Too early! Try again.");
+                } else {
+                    System.out.printf(">> Your reaction time: %d ms.%n", reactionTime);
+                }
+
+                System.out.println(">> Play again? [y/n]");
+                String input = scanner.nextLine();
+                if (input.trim().equalsIgnoreCase("n")) {
+                    break;
+                }
             }
-
-            System.out.println(">> Play again? [y/n]");
-            String inp = scanner.nextLine();
-            if (inp.charAt(0) == 'n' || inp.charAt(0) == 'N') {
-                break;
-            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
-        scanner.close();
         System.out.println(">> Thanks for playing! 👋 Made by Tanav.");
+    }
+}
+
+class ReactionTimer extends Thread {
+    private final Scanner scanner;
+    public long pressTime = 0;
+    public boolean tooEarly = false;
+
+    public ReactionTimer(Scanner scanner) {
+        this.scanner = scanner;
+    }
+
+    @Override
+    public void run() {
+        long current = System.currentTimeMillis();
+        scanner.nextLine(); // Wait for Enter
+        pressTime = System.currentTimeMillis();
+
+        // Optional: simulate early press detection logic
+        if ((pressTime - current) < 20) {
+            tooEarly = true;
+        }
     }
 }
