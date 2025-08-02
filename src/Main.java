@@ -1,7 +1,8 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         System.out.println("""
         
          _  __          ____  _        _ _       \s
@@ -12,35 +13,39 @@ public class Main {
                   |___/                          \s
                Press [Enter] on 🔴 to strike!
         """);
+
         Scanner scanner = new Scanner(System.in);
 
-        for (;;) {
-            System.out.println("> Strike space on red emoji.");
-            long startTime = 0;
+        while (true) {
+            System.out.println("> Strike [Enter] when 🔴 appears.");
+
             try {
-                Thread.sleep((long) (Math.random()*1000 + 1000));
+                Thread.sleep((long) (Math.random() * 1000 + 1000));
                 System.out.print("\uD83D\uDFE1 ");
-                Thread.sleep((long) (Math.random()*1000 + 500));
+                Thread.sleep((long) (Math.random() * 1000 + 500));
                 System.out.print("\uD83D\uDFE0 ");
-                Thread.sleep((long) (Math.random()*1000 + 500));
-                System.out.println("\uD83D\uDD34");
-                startTime = System.currentTimeMillis();
-            } catch (InterruptedException _) {
+                Thread.sleep((long) (Math.random() * 1000 + 500));
+                System.out.println("\uD83D\uDD34"); // RED
+            } catch (InterruptedException ignored) {}
+
+            long startTime = System.currentTimeMillis();
+            String key = scanner.nextLine(); // read one key
+            long endTime = System.currentTimeMillis();
+
+            if (startTime == endTime) {
+                System.out.println(">> Too early! Try again.");
+            } else {
+                System.out.printf(">> Your reaction time: %d ms.%n", endTime - startTime);
             }
 
-            scanner.nextLine();
-            long endTime = System.currentTimeMillis();
-            if (startTime == 0) {
-                System.out.println(">> Too early try again.");
-            } else {
-                System.out.printf(">> Your reaction time: %d ms.\n", endTime - startTime);
-            }
-            System.out.println(">> Play again? [y?/n]");
-            String in = scanner.nextLine();
-            if (!in.isEmpty() && in.charAt(0) == 'n') {
+            System.out.println(">> Play again? [y/n]");
+            String inp = scanner.nextLine();
+            if (inp.charAt(0) == 'n' || inp.charAt(0) == 'N') {
                 break;
             }
         }
+
         scanner.close();
+        System.out.println(">> Thanks for playing! 👋");
     }
 }
